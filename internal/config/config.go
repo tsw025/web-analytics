@@ -15,10 +15,18 @@ type Config struct {
 // LoadConfig loads the configuration from the environment variables
 func LoadConfig() (*Config, error) {
 	return &Config{
-		ServerPort:  os.Getenv("SERVER_PORT"),
-		DatabaseURL: os.Getenv("DATABASE_URL"),
-		MongoURL:    os.Getenv("MONGO_URL"),
-		RedisAddr:   os.Getenv("REDIS_ADDR"),
-		JWTSecret:   os.Getenv("JWT_SECRET"),
+		ServerPort:  getEnv("SERVER_PORT", "8000"),
+		DatabaseURL: getEnv("DATABASE_URL", ""),
+		MongoURL:    getEnv("MONGO_URL", ""),
+		RedisAddr:   getEnv("REDIS_ADDR", ""),
+		JWTSecret:   getEnv("JWT_SECRET", "secret_value"),
 	}, nil
+}
+
+// Configure and validate if the envs are set or else set the default values
+func getEnv(key string, fallback string) string {
+	if value, exists := os.LookupEnv(key); exists {
+		return value
+	}
+	return fallback
 }
