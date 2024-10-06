@@ -9,5 +9,6 @@ type Website struct {
 	UpdatedAt time.Time `gorm:"type:timestampz"`
 
 	// Associations
-	Users []User `gorm:"many2many:user_websites;"`
+	Users     []User     `gorm:"many2many:user_websites;"`
+	Analytics *Analytics `gorm:"foreignKey:WebsiteID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
