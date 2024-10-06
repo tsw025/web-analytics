@@ -2,8 +2,10 @@ package services
 
 import (
 	"errors"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/tsw025/web_analytics/internal/config"
+	"github.com/tsw025/web_analytics/internal/schemas"
+	"strconv"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -26,11 +28,16 @@ func NewAuthTokenService(cfg *config.Config) AuthTokenService {
 
 func (t *authTokenService) GenerateToken(user_id uint) (string, error) {
 	log.Debugf("Generating Tokens")
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": user_id,
-		"exp": time.Now().Add(24 * time.Hour).Unix(),
-	})
+	claims := schemas.JwtCustomClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			Issuer:    "web_analytics",
+			Subject:   strconv.Itoa(int(user_id)),
+		},
+	}
 
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	secretKey := []byte(t.jwtSecret)
 	tokenString, err := token.SignedString(secretKey)
 	if err != nil {

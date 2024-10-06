@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"errors"
 	"github.com/tsw025/web_analytics/internal/models"
 	"gorm.io/gorm"
 )
@@ -29,9 +30,11 @@ func NewWebsiteRepository(db *gorm.DB) WebsiteRepository {
 // GetByURL returns a website by URL
 func (r *websiteRepository) GetByURL(url string) (*models.Website, error) {
 	var result models.Website
-	err := r.db.Where("url = ?", url).First(&result).Error
-	if err != nil {
-		return nil, err
+	err := r.db.First(&result, "url = ?", url).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		// Handle "record not found" case
+		return nil, nil // or return a specific error or message
 	}
+
 	return &result, err
 }
