@@ -5,6 +5,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/tsw025/web_analytics/internal/config"
 	"github.com/tsw025/web_analytics/internal/database"
+	"github.com/tsw025/web_analytics/internal/handlers"
 	"github.com/tsw025/web_analytics/internal/handlers/auth"
 	"github.com/tsw025/web_analytics/internal/logger"
 	echologrus "github.com/tsw025/web_analytics/internal/middleware"
@@ -39,6 +40,7 @@ func main() {
 
 	// Middleware
 	e.Use(middleware.Recover()) // Recover from panics anywhere in the middleware chain
+	e.HTTPErrorHandler = handlers.CustomHTTPErrorHandler
 
 	// Validator
 	e.Validator = &schemas.BaseValidator{Validator: validator.New()}

@@ -12,7 +12,7 @@ type LoginRequest struct {
 
 type RegisterRequest struct {
 	Username string `json:"username" validate:"required,min=3,max=32,alphanum,lowercase"`
-	Password string `json:"password" validate:"required,min=8,max=16,password_val"`
+	Password string `json:"password" validate:"required,min=8,max=16,password_format"`
 }
 
 func passwordValidation(fl validator.FieldLevel) bool {
