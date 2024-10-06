@@ -11,5 +11,5 @@ type User struct {
 	UpdatedAt    time.Time `gorm:"type:timestampz"`
 
 	// Associations
-	Websites []Website `gorm:"many2many:user_websites;"`
+	Websites []*Website `gorm:"many2many:user_websites;"`
 }
