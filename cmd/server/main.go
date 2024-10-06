@@ -56,7 +56,7 @@ func main() {
 	// Service Initialization
 	authService := services.NewPasswordAuthService(repositories.NewUserRepository(db))
 	tokenService := services.NewAuthTokenService(cfg)
-	analyseService := services.NewAnalyseService(repositories.NewWebsiteRepository(db))
+	analyseService := services.NewAnalyseService(repositories.NewWebsiteRepository(db), repositories.NewAnalyticsRepository(db))
 
 	// Handler Initialization
 	mainGroup := e.Group("/api")

@@ -33,12 +33,10 @@ func (h *AnalyseHandler) Analyse(c echo.Context) error {
 		return err
 	}
 
-	_, err := h.analyzeService.Analyse(req.URL, dbUser)
+	dbAnalyse, err := h.analyzeService.Analyse(req.URL, dbUser)
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(200, map[string]interface{}{
-		"result": "Done",
-	})
+	return c.JSON(200, dbAnalyse)
 }
