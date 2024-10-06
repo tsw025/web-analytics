@@ -2,8 +2,13 @@ package schemas
 
 import (
 	"github.com/go-playground/validator/v10"
+	"github.com/golang-jwt/jwt/v5"
 	"unicode"
 )
+
+type JwtCustomClaims struct {
+	jwt.RegisteredClaims
+}
 
 type LoginRequest struct {
 	Username string `json:"username" validate:"required,alphanum,lowercase,min=3,max=32"`
