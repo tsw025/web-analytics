@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
-	echologrus "github.com/tsw025/web_analytics/internal/middleware"
+	"github.com/tsw025/web_analytics/internal/echologrus"
 	"github.com/tsw025/web_analytics/internal/schemas"
 	"net/http"
 )

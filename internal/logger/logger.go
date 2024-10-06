@@ -4,7 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 	"github.com/tsw025/web_analytics/internal/config"
-	echologrus "github.com/tsw025/web_analytics/internal/middleware"
+	"github.com/tsw025/web_analytics/internal/echologrus"
 	"time"
 )
 
