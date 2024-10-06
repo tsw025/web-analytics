@@ -2,7 +2,7 @@ package database
 
 import (
 	"github.com/tsw025/web_analytics/internal/config"
-	echologrus "github.com/tsw025/web_analytics/internal/middleware"
+	"github.com/tsw025/web_analytics/internal/echologrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
