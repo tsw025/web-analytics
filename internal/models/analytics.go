@@ -1,4 +1,3 @@
-// models/analytics.go
 package models
 
 import (
