@@ -2,9 +2,11 @@ package services
 
 import (
 	"errors"
+	"github.com/tsw025/web_analytics/internal/handlers"
 	"github.com/tsw025/web_analytics/internal/models"
 	"github.com/tsw025/web_analytics/internal/repositories"
 	"golang.org/x/crypto/bcrypt"
+	"net/http"
 )
 
 type AuthService interface {
@@ -26,12 +28,12 @@ func (s *passwordAuthService) Authenticate(username string, password string) (*m
 	invalidErrorMessage := "Invalid username or password."
 	user, err := s.userRepo.GetByUsername(username)
 	if err != nil {
-		return nil, errors.New(invalidErrorMessage)
+		return nil, handlers.NewDomainError(http.StatusUnauthorized, invalidErrorMessage, errors.New(invalidErrorMessage))
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
 	if err != nil {
-		return nil, errors.New(invalidErrorMessage)
+		return nil, handlers.NewDomainError(http.StatusUnauthorized, invalidErrorMessage, errors.New(invalidErrorMessage))
 	}
 
 	return user, nil
@@ -40,7 +42,7 @@ func (s *passwordAuthService) Authenticate(username string, password string) (*m
 func (s *passwordAuthService) Register(username string, password string) (*models.User, error) {
 	_, err := s.userRepo.GetByUsername(username)
 	if err == nil {
-		return nil, errors.New("User already exists.")
+		return nil, handlers.NewDomainError(http.StatusBadRequest, "Username already exists", errors.New("username"))
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
