@@ -7,5 +7,10 @@ type BaseValidator struct {
 }
 
 func (bv *BaseValidator) Validate(i interface{}) error {
+	err := bv.Validator.RegisterValidation("password_val", passwordValidation)
+	if err != nil {
+		return err
+	}
+
 	return bv.Validator.Struct(i)
 }
