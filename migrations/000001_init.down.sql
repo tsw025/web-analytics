@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS user_websites;
+DROP TABLE IF EXISTS analytics;
+DROP TYPE IF EXISTS analytics_status;
+DROP TABLE IF EXISTS websites;
+DROP TABLE IF EXISTS users;
