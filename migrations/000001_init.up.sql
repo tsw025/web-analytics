@@ -25,7 +25,7 @@ CREATE TABLE user_websites (
 CREATE TABLE analytics (
                            id SERIAL PRIMARY KEY,
                            website_id INTEGER NOT NULL REFERENCES websites(id),
-                           data JSONB NOT NULL,
+                           data JSONB,
                            status analytics_status NOT NULL DEFAULT 'pending',
                            created_at TIMESTAMPTZ DEFAULT NOW(),
                            updated_at TIMESTAMPTZ DEFAULT NOW()

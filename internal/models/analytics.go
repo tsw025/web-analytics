@@ -18,10 +18,8 @@ const (
 type Analytics struct {
 	ID        uint            `gorm:"primaryKey"`
 	WebsiteID uint            `gorm:"not null;uniqueIndex"`
-	Data      datatypes.JSON  `gorm:"type:jsonb;not null"`
+	Data      datatypes.JSON  `gorm:"type:jsonb"`
 	Status    AnalyticsStatus `gorm:"type:analytics_status;not null;default:'pending'"`
 	CreatedAt time.Time       `gorm:"type:timestampz"`
 	UpdatedAt time.Time       `gorm:"type:timestampz"`
-
-	Website *Website `gorm:"foreignKey:WebsiteID"`
 }
