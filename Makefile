@@ -1,6 +1,6 @@
 DB_URL="$(DATABASE_URL)"
 
-.PHONY: migrate-up migrate-down migrate-new
+.PHONY: migrate-up migrate-down migrate-new app
 
 migrate-up:
 	migrate -path ./migrations -database "$(DB_URL)" up
@@ -15,3 +15,8 @@ migrate-down-all:
 migrate-new:
 	@read -p "Enter migration name: " name; \
 	migrate create -seq -ext sql -dir migrations "$$name"
+
+
+app:
+	mv env.example .env
+	docker-compose up --build
