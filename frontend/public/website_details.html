@@ -1,0 +1,115 @@
+<!-- frontend/public/website_details.html -->
+<h1 class="title">Website Details</h1>
+<div id="website-details">
+    <div class="notification is-info">Loading website details...</div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            window.location.href = '/login.html';
+            return;
+        }
+
+        fetch(`/api/websites/${id}`, { // Updated to relative path
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => response.json().then(data => ({ status: response.status, body: data })))
+            .then(result => {
+                const detailsDiv = document.getElementById('website-details');
+                if (result.status === 200) {
+                    const data = result.body;
+                    let html = `
+                <table class="table is-fullwidth">
+                    <tbody>
+                        <tr>
+                            <th>ID</th>
+                            <td>${data.id}</td>
+                        </tr>
+                        <tr>
+                            <th>URL</th>
+                            <td>${data.url}</td>
+                        </tr>
+                        <tr>
+                            <th>Created At</th>
+                            <td>${new Date(data.created_at).toLocaleString()}</td>
+                        </tr>
+                        <tr>
+                            <th>Updated At</th>
+                            <td>${new Date(data.updated_at).toLocaleString()}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h2 class="subtitle">Analytics</h2>
+            `;
+
+                    if (data.analytics && data.analytics.Data) {
+                        const analytics = data.analytics.Data;
+                        html += `
+                    <table class="table is-fullwidth">
+                        <tbody>
+                            <tr>
+                                <th>External Links</th>
+                                <td>${analytics.links.external_links}</td>
+                            </tr>
+                            <tr>
+                                <th>Internal Links</th>
+                                <td>${analytics.links.internal_links}</td>
+                            </tr>
+                            <tr>
+                                <th>Inaccessible Links</th>
+                                <td>${analytics.links.inaccessible_links}</td>
+                            </tr>
+                            <tr>
+                                <th>Page Title</th>
+                                <td>${analytics.page_title}</td>
+                            </tr>
+                            <tr>
+                                <th>HTML Version</th>
+                                <td>${analytics.html_version}</td>
+                            </tr>
+                            <tr>
+                                <th>Headings Count</th>
+                                <td>
+                                    H1: ${analytics.headings_count.h1},
+                                    H2: ${analytics.headings_count.h2},
+                                    H3: ${analytics.headings_count.h3},
+                                    H4: ${analytics.headings_count.h4},
+                                    H5: ${analytics.headings_count.h5},
+                                    H6: ${analytics.headings_count.h6}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Contains Login Form</th>
+                                <td>${analytics.contains_login_form ? 'Yes' : 'No'}</td>
+                            </tr>
+                            <tr>
+                                <th>Analysis Completed At</th>
+                                <td>${new Date(analytics.analysis_completed_at).toLocaleString()}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+                    } else {
+                        html += '<div class="notification is-warning">Analysis is pending.</div>';
+                    }
+
+                    detailsDiv.innerHTML = html;
+                } else {
+                    detailsDiv.innerHTML = '<div class="notification is-danger">Failed to load website details.</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const detailsDiv = document.getElementById('website-details');
+                detailsDiv.innerHTML = '<div class="notification is-danger">An error occurred while fetching website details.</div>';
+            });
+    });
+</script>

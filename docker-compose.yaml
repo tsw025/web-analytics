@@ -1,10 +1,10 @@
 services:
-  web:
+  backend:
     build:
       context: .
       target: deploy
       dockerfile: docker/Dockerfile
-    container_name: web
+    container_name: backend
     ports:
       - "8000:8000"
     depends_on:
@@ -65,3 +65,15 @@ services:
         interval: 10s
         timeout: 5s
         retries: 5
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+    container_name: frontend
+    depends_on:
+      - backend
+    ports:
+      - "8001:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

@@ -56,7 +56,11 @@ func main() {
 	})
 	// Middleware
 	e.Use(middleware.Recover()) // Recover from panics anywhere in the middleware chain
-	e.Use(middleware.CORS())    // Enable CORS, Default configuration
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
+	}))
+
 	e.HTTPErrorHandler = handlers.CustomHTTPErrorHandler
 
 	// Validator

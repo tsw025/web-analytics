@@ -1,0 +1,14 @@
+{
+  "name": "web-analyzer-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for Web Analyzer using HTMX and Bulma",
+  "main": "src/js/app.js",
+  "scripts": {
+    "start": "nginx -g 'daemon off;'",
+    "build": "echo 'No build steps required'"
+  },
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+  }
+}
