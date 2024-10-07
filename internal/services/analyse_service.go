@@ -2,12 +2,16 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"github.com/hibiken/asynq"
 	"github.com/tsw025/web_analytics/internal/echologrus"
+	"github.com/tsw025/web_analytics/internal/handlers"
 	"github.com/tsw025/web_analytics/internal/models"
 	"github.com/tsw025/web_analytics/internal/repositories"
 	"github.com/tsw025/web_analytics/internal/tasks"
 	"gorm.io/gorm"
+	"net/http"
+	"net/url"
 )
 
 type AnalyseService interface {
@@ -33,6 +37,9 @@ func NewAnalyseService(
 }
 
 func (s *analyseService) Analyse(url string, user *models.User) (*models.Analytics, error) {
+	if err := s.validateURL(url); err != nil {
+		return nil, err
+	}
 	website, err := s.getOrCreateWebsite(url, user)
 	if err != nil {
 		return nil, err
@@ -120,5 +127,25 @@ func (s *analyseService) enqueueAnalyzeTask(url string, analyticsID uint) error 
 	}
 
 	echologrus.Logger.Infof("Task enqueued: %v", info)
+	return nil
+}
+
+func (s *analyseService) validateURL(u string) error {
+	parsedURL, err := url.ParseRequestURI(u)
+	if err != nil {
+		return handlers.NewDomainError(400, "Invalid URL", errors.New("url"))
+	}
+
+	resp, err := http.Head(parsedURL.String())
+	connection_error := fmt.Sprintf("Unable to reach URL: %s", parsedURL.String())
+	if err != nil {
+		return handlers.NewDomainError(400, connection_error, errors.New("url"))
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return handlers.NewDomainError(400, connection_error, errors.New("url"))
+	}
+
 	return nil
 }
