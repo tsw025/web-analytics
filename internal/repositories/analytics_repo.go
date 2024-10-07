@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"github.com/tsw025/web_analytics/internal/models"
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -15,6 +16,7 @@ type AnalyticsRepository interface {
 	Create(user *models.Analytics) error
 	Update(user *models.Analytics) error
 	Delete(user *models.Analytics) error
+	UpdateDataAndStatus(id uint, json datatypes.JSON, completed models.AnalyticsStatus) error
 }
 
 type analyticsRepository struct {
@@ -44,5 +46,17 @@ func (r *analyticsRepository) UpdateStatus(id uint, status models.AnalyticsStatu
 	}
 
 	analytics.Status = status
+	return r.Update(analytics)
+}
+
+// UpdateDataAndStatus updates the data and status of the analytics
+func (r *analyticsRepository) UpdateDataAndStatus(id uint, json datatypes.JSON, completed models.AnalyticsStatus) error {
+	analytics, err := r.GetByID(id)
+	if err != nil {
+		return err
+	}
+
+	analytics.Data = json
+	analytics.Status = completed
 	return r.Update(analytics)
 }

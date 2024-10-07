@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/go-playground/validator/v10"
+	"github.com/hibiken/asynq"
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/tsw025/web_analytics/internal/config"
@@ -41,6 +42,12 @@ func main() {
 		panic(err)
 	}
 
+	// Initialize the Asynq client
+	asynqClient := asynq.NewClient(asynq.RedisClientOpt{
+		Addr: cfg.RedisAddr,
+		DB:   0,
+	})
+
 	// JwtMiddleware
 	jwtMiddleware := echojwt.WithConfig(echojwt.Config{
 		SigningKey:     []byte(cfg.JWTSecret),
@@ -56,7 +63,11 @@ func main() {
 	// Service Initialization
 	authService := services.NewPasswordAuthService(repositories.NewUserRepository(db))
 	tokenService := services.NewAuthTokenService(cfg)
-	analyseService := services.NewAnalyseService(repositories.NewWebsiteRepository(db), repositories.NewAnalyticsRepository(db))
+	analyseService := services.NewAnalyseService(
+		repositories.NewWebsiteRepository(db),
+		repositories.NewAnalyticsRepository(db),
+		asynqClient,
+	)
 
 	// Handler Initialization
 	mainGroup := e.Group("/api")
@@ -68,4 +79,6 @@ func main() {
 
 	echologrus.Logger.Debugf("Starting server on port %s", cfg.ServerPort)
 	e.Logger.Fatal(e.Start(":" + cfg.ServerPort))
+
+	defer asynqClient.Close()
 }

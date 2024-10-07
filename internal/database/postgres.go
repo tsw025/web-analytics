@@ -2,7 +2,6 @@ package database
 
 import (
 	"github.com/tsw025/web_analytics/internal/config"
-	"github.com/tsw025/web_analytics/internal/echologrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -13,9 +12,7 @@ func ConnectToPostgres(cfg *config.Config) (*gorm.DB, error) {
 	dsn := cfg.DatabaseURL
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		echologrus.Logger.Error("Postgres DB Connect issue")
 		return nil, err
 	}
-	echologrus.Logger.Info("Successfully connected to Postgres DB")
 	return db, nil
 }
