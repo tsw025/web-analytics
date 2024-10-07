@@ -2,9 +2,11 @@ package services
 
 import (
 	"errors"
+	"github.com/hibiken/asynq"
 	"github.com/tsw025/web_analytics/internal/echologrus"
 	"github.com/tsw025/web_analytics/internal/models"
 	"github.com/tsw025/web_analytics/internal/repositories"
+	"github.com/tsw025/web_analytics/internal/tasks"
 	"gorm.io/gorm"
 )
 
@@ -15,12 +17,18 @@ type AnalyseService interface {
 type analyseService struct {
 	websiteRepo  repositories.WebsiteRepository
 	analyticRepo repositories.AnalyticsRepository
+	asynqClient  *asynq.Client
 }
 
-func NewAnalyseService(websiteRepo repositories.WebsiteRepository, analyticRepo repositories.AnalyticsRepository) AnalyseService {
+func NewAnalyseService(
+	websiteRepo repositories.WebsiteRepository,
+	analyticRepo repositories.AnalyticsRepository,
+	asynqClient *asynq.Client,
+) AnalyseService {
 	return &analyseService{
 		websiteRepo:  websiteRepo,
 		analyticRepo: analyticRepo,
+		asynqClient:  asynqClient,
 	}
 }
 
@@ -35,6 +43,12 @@ func (s *analyseService) Analyse(url string, user *models.User) (*models.Analyti
 		return nil, err
 	}
 
+	// Create a task to analyze the website
+	if analytics.Status == models.StatusPending || analytics.Status == models.StatusFailed {
+		if err := s.enqueueAnalyzeTask(url, analytics.ID); err != nil {
+			return nil, err
+		}
+	}
 	return analytics, nil
 }
 
@@ -78,4 +92,33 @@ func (s *analyseService) getOrCreateAnalytics(websiteID uint) (*models.Analytics
 	}
 	echologrus.Logger.Infof("Analytics found for website ID: %d", websiteID)
 	return analytics, nil
+}
+
+func (s *analyseService) enqueueAnalyzeTask(url string, analyticsID uint) error {
+	payload := &tasks.AnalyzeWebsitePayload{
+		URL:         url,
+		AnalyticsID: analyticsID,
+	}
+
+	payloadBytes, err := payload.Marshal()
+	if err != nil {
+		echologrus.Logger.Errorf("Failed to marshal payload: %v", err)
+		return err
+	}
+
+	task := asynq.NewTask(tasks.TypeAnalyzeWebsite, payloadBytes)
+
+	opts := []asynq.Option{
+		asynq.Queue("default"),
+		asynq.ProcessIn(0),
+	}
+
+	info, err := s.asynqClient.Enqueue(task, opts...)
+	if err != nil {
+		echologrus.Logger.Errorf("Failed to enqueue task: %v", err)
+		return err
+	}
+
+	echologrus.Logger.Infof("Task enqueued: %v", info)
+	return nil
 }

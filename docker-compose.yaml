@@ -14,9 +14,27 @@ services:
         condition: service_healthy
     environment:
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?sslmode=disable
-      - MONGO_URL=${MONGO_URL}
-      - REDIS_ADDR=${REDIS_ADDR}
+      - REDIS_ADDR=redis:6379
       - JWT_SECRET=${JWT_SECRET}
+    env_file:
+      - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  worker:
+    build:
+      context: .
+      target: runner
+      dockerfile: docker/analzer_worker.Dockerfile
+    container_name: worker
+    depends_on:
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?sslmode=disable
+      - REDIS_ADDR=redis:6379
     env_file:
       - .env
     extra_hosts:
