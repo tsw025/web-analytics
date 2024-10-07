@@ -12,6 +12,7 @@ type Config struct {
 	RedisAddr   string
 	JWTSecret   string
 	LogLevel    log.Level
+	CORS_ORIGIN string
 }
 
 // LoadConfig loads the configuration from the environment variables
@@ -27,6 +28,7 @@ func LoadConfig() (*Config, error) {
 		RedisAddr:   getEnv("REDIS_ADDR", ""),
 		JWTSecret:   getEnv("JWT_SECRET", "secret_value"),
 		LogLevel:    logLevel,
+		CORS_ORIGIN: getEnv("CORS_ORIGIN", "*"),
 	}, nil
 }
 

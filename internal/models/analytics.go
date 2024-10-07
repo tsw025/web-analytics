@@ -22,4 +22,7 @@ type Analytics struct {
 	Status    AnalyticsStatus `gorm:"type:analytics_status;not null;default:'pending'"`
 	CreatedAt time.Time       `gorm:"type:timestampz"`
 	UpdatedAt time.Time       `gorm:"type:timestampz"`
+
+	// Associations
+	Website Website `gorm:"foreignKey:WebsiteID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }

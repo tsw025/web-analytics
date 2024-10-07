@@ -12,6 +12,7 @@ import (
 	"github.com/tsw025/web_analytics/internal/handlers"
 	"github.com/tsw025/web_analytics/internal/handlers/analyze"
 	"github.com/tsw025/web_analytics/internal/handlers/auth"
+	"github.com/tsw025/web_analytics/internal/handlers/websites"
 	"github.com/tsw025/web_analytics/internal/logger"
 	"github.com/tsw025/web_analytics/internal/repositories"
 	"github.com/tsw025/web_analytics/internal/schemas"
@@ -55,6 +56,7 @@ func main() {
 	})
 	// Middleware
 	e.Use(middleware.Recover()) // Recover from panics anywhere in the middleware chain
+	e.Use(middleware.CORS())    // Enable CORS, Default configuration
 	e.HTTPErrorHandler = handlers.CustomHTTPErrorHandler
 
 	// Validator
@@ -68,6 +70,10 @@ func main() {
 		repositories.NewAnalyticsRepository(db),
 		asynqClient,
 	)
+	webUserService := services.NewWebsiteService(
+		repositories.NewWebsiteRepository(db),
+		repositories.NewWebsiteUserRepository(db),
+	)
 
 	// Handler Initialization
 	mainGroup := e.Group("/api")
@@ -76,6 +82,10 @@ func main() {
 
 	analyzeHandler := analyze.NewAnalyseHandler(analyseService, repositories.NewUserRepository(db))
 	analyzeHandler.RegisterRoutes(mainGroup, jwtMiddleware)
+
+	// Website Handler
+	websiteHandler := websites.NewWebsiteHandler(webUserService, repositories.NewUserRepository(db), repositories.NewWebsiteRepository(db))
+	websiteHandler.RegisterRoutes(mainGroup, jwtMiddleware)
 
 	echologrus.Logger.Debugf("Starting server on port %s", cfg.ServerPort)
 	e.Logger.Fatal(e.Start(":" + cfg.ServerPort))
