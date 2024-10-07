@@ -1,4 +1,3 @@
-<!-- frontend/public/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,62 +9,89 @@
     <link rel="stylesheet" href="/static/css/styles.css">
     <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@1.9.3"></script>
+    <style>
+        .full-height {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
-<section class="section">
-    <div class="container">
-        <!-- Navbar -->
-        <nav class="navbar" role="navigation" aria-label="main navigation">
-            <div class="navbar-brand">
-                <a class="navbar-item" href="/index.html">
-                    Web Analyzer
-                </a>
-            </div>
+<!-- Navigation Bar -->
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/index.html">Home</a>
+    </div>
+</nav>
 
-            <div class="navbar-menu">
-                <div class="navbar-start">
-                    <a class="navbar-item" href="/dashboard.html" hx-get="/dashboard.html" hx-target="#content" hx-swap="innerHTML">
-                        Dashboard
+<section class="section full-height">
+    <div class="container">
+        <!-- Main Content -->
+        <div id="content" class="has-text-centered">
+            <div id="auth-section">
+                <h1 class="title">Welcome to Web Analyzer</h1>
+                <p class="subtitle">Analyze your websites easily.</p>
+                <div id="auth-buttons">
+                    <a class="button is-primary" href="/register.html" hx-get="/register.html" hx-target="#content" hx-swap="innerHTML">
+                        <strong>Sign up</strong>
                     </a>
-                    <a class="navbar-item" href="/submit.html" hx-get="/submit.html" hx-target="#content" hx-swap="innerHTML">
-                        Submit Website
+                    <br><br>
+                    <a class="button is-light" href="/login.html" hx-get="/login.html" hx-target="#content" hx-swap="innerHTML">
+                        Log in
                     </a>
                 </div>
-
-                <div class="navbar-end">
-                    <div class="navbar-item">
-                        <div id="auth-buttons">
-                            <a class="button is-primary" href="/register.html" hx-get="/register.html" hx-target="#content" hx-swap="innerHTML">
-                                <strong>Sign up</strong>
-                            </a>
-                            <a class="button is-light" href="/login.html" hx-get="/login.html" hx-target="#content" hx-swap="innerHTML">
-                                Log in
-                            </a>
-                        </div>
-                        <div id="user-info" style="display: none;">
-                            <div class="field is-grouped">
-                                <p class="control">
-                                    <span>Welcome, <span id="username"></span>!</span>
-                                </p>
-                                <p class="control">
-                                    <button class="button is-light" onclick="logout()">Logout</button>
-                                </p>
-                            </div>
-                        </div>
+                <div id="logged-in-section" style="display: none;">
+                    <p class="subtitle">Welcome back! Continue searching for website analytics.</p>
+                    <div class="buttons is-centered">
+                        <a class="button is-link" href="/dashboard.html">Dashboard</a>
+                        <button class="button is-danger" id="logout-button">Logout</button>
                     </div>
                 </div>
             </div>
-        </nav>
-
-        <!-- Main Content -->
-        <div id="content">
-            <h1 class="title">Welcome to Web Analyzer</h1>
-            <p class="subtitle">Analyze your websites easily.</p>
+            <div id="analyze-section" style="display: none;">
+                <h1 class="title">Analyze a Website</h1>
+                <form id="analyze-form">
+                    <div class="field">
+                        <label class="label">Website URL</label>
+                        <div class="control">
+                            <input class="input" type="url" id="website-url" placeholder="Enter website URL" required>
+                        </div>
+                    </div>
+                    <div class="control">
+                        <button class="button is-link" type="submit">Analyze</button>
+                    </div>
+                </form>
+                <br>
+                <h2 class="title">Analyzed Results</h2>
+                <div id="results-table">
+                    <div class="notification is-info">Loading results...</div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
 <!-- Custom JS -->
 <script src="/static/js/app.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const token = localStorage.getItem('token');
+        const authButtons = document.getElementById('auth-buttons');
+        const loggedInSection = document.getElementById('logged-in-section');
+
+        if (token) {
+            authButtons.style.display = 'none';
+            loggedInSection.style.display = 'block';
+        }
+
+        document.getElementById('logout-button').addEventListener('click', function() {
+            localStorage.removeItem('token');
+            window.location.reload();
+        });
+    });
+</script>
 </body>
 </html>

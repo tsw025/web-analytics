@@ -12,3 +12,12 @@ type Website struct {
 	Users     []User     `gorm:"many2many:user_websites;" json:"users,omitempty"`
 	Analytics *Analytics `gorm:"foreignKey:WebsiteID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"analytics,omitempty"`
 }
+
+func (w Website) HasUser(user *User) bool {
+	for _, u := range w.Users {
+		if u.ID == user.ID {
+			return true
+		}
+	}
+	return false
+}

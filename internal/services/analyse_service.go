@@ -76,6 +76,12 @@ func (s *analyseService) getOrCreateWebsite(url string, user *models.User) (*mod
 		}
 	} else {
 		echologrus.Logger.Infof("Website found: %s", website.URL)
+		if !website.HasUser(user) {
+			website.Users = append(website.Users, *user)
+			if err := s.websiteRepo.Update(website); err != nil {
+				return nil, err
+			}
+		}
 	}
 
 	return website, nil

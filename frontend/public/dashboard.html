@@ -1,4 +1,21 @@
-<!-- frontend/public/dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <!-- Bulma CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+<!-- Navigation Bar -->
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/index.html">Home</a>
+    </div>
+</nav>
+
 <h1 class="title">Dashboard</h1>
 <div>
     <a class="button is-link" href="/submit.html" hx-get="/submit.html" hx-target="#content" hx-swap="innerHTML">Submit a New Website</a>
@@ -31,33 +48,33 @@
                         return;
                     }
                     let html = `
-                <table class="table is-fullwidth">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>URL</th>
-                            <th>Created At</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
+                    <table class="table is-fullwidth">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>URL</th>
+                                <th>Created At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
                     result.body.forEach(website => {
                         html += `
-                    <tr>
-                        <td>${website.id}</td>
-                        <td>${website.url}</td>
-                        <td>${new Date(website.created_at).toLocaleString()}</td>
-                        <td>
-                            <a class="button is-small is-info" href="/website_details.html?id=${website.id}" hx-get="/website_details.html?id=${website.id}" hx-target="#content" hx-swap="innerHTML">View Details</a>
-                        </td>
-                    </tr>
-                `;
+                        <tr>
+                            <td>${website.id}</td>
+                            <td>${website.url}</td>
+                            <td>${new Date(website.created_at).toLocaleString()}</td>
+                            <td>
+                                <a class="button is-small is-info" href="/website_details.html?id=${website.id}" hx-get="/website_details.html?id=${website.id}" hx-target="#content" hx-swap="innerHTML">View Details</a>
+                            </td>
+                        </tr>
+                    `;
                     });
                     html += `
-                    </tbody>
-                </table>
-            `;
+                        </tbody>
+                    </table>
+                `;
                     listDiv.innerHTML = html;
                 } else {
                     listDiv.innerHTML = '<div class="notification is-danger">Failed to load websites.</div>';
@@ -70,3 +87,5 @@
             });
     });
 </script>
+</body>
+</html>
