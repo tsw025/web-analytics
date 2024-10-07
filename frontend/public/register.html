@@ -1,0 +1,63 @@
+<!-- frontend/public/register.html -->
+<h1 class="title">Register</h1>
+<form id="register-form">
+    <div class="field">
+        <label class="label">Username</label>
+        <div class="control">
+            <input class="input" type="text" name="username" required>
+        </div>
+    </div>
+    <div class="field">
+        <label class="label">Password</label>
+        <div class="control">
+            <input class="input" type="password" name="password" required>
+        </div>
+    </div>
+    <div class="control">
+        <button class="button is-primary" type="submit">Register</button>
+    </div>
+</form>
+<div id="register-message"></div>
+
+<script>
+    document.getElementById('register-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const username = event.target.username.value;
+        const password = event.target.password.value;
+
+        fetch('/api/auth/register', { // Updated to relative path
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        })
+            .then(response => response.json().then(data => ({ status: response.status, body: data })))
+            .then(result => {
+                const messageDiv = document.getElementById('register-message');
+                if (result.status === 200) {
+                    // Save token and update UI
+                    localStorage.setItem('token', result.body.token);
+                    messageDiv.innerHTML = '<div class="notification is-success">Registration successful! Redirecting to dashboard...</div>';
+                    setTimeout(() => {
+                        window.location.href = '/dashboard.html';
+                    }, 1500);
+                } else {
+                    // Display errors
+                    let errors = result.body.errors || [];
+                    let errorHtml = '<div class="notification is-danger">';
+                    if (result.body.message) {
+                        errorHtml += `<p>${result.body.message}</p>`;
+                    }
+                    errors.forEach(err => {
+                        errorHtml += `<p>${err.field}: ${err.message}</p>`;
+                    });
+                    errorHtml += '</div>';
+                    messageDiv.innerHTML = errorHtml;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+</script>

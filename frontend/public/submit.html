@@ -1,0 +1,53 @@
+<!-- frontend/public/submit.html -->
+<h1 class="title">Submit a Website for Analysis</h1>
+<form id="submit-form">
+    <div class="field">
+        <label class="label">Website URL</label>
+        <div class="control">
+            <input class="input" type="url" name="url" placeholder="https://example.com" required>
+        </div>
+    </div>
+    <div class="control">
+        <button class="button is-primary" type="submit">Submit</button>
+    </div>
+</form>
+<div id="submit-message"></div>
+
+<script>
+    document.getElementById('submit-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const url = event.target.url.value;
+        const token = localStorage.getItem('token');
+
+        fetch('/api/analyse', { // Updated to relative path
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ url })
+        })
+            .then(response => response.json().then(data => ({ status: response.status, body: data })))
+            .then(result => {
+                const messageDiv = document.getElementById('submit-message');
+                if (result.status === 200) {
+                    messageDiv.innerHTML = '<div class="notification is-success">Website submitted successfully! <a href="/dashboard.html" hx-get="/dashboard.html" hx-target="#content" hx-swap="innerHTML">Go to Dashboard</a></div>';
+                } else {
+                    // Display errors
+                    let errors = result.body.errors || [];
+                    let errorHtml = '<div class="notification is-danger">';
+                    if (result.body.message) {
+                        errorHtml += `<p>${result.body.message}</p>`;
+                    }
+                    errors.forEach(err => {
+                        errorHtml += `<p>${err.field}: ${err.message}</p>`;
+                    });
+                    errorHtml += '</div>';
+                    messageDiv.innerHTML = errorHtml;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+</script>

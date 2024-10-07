@@ -1,0 +1,71 @@
+<!-- frontend/public/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web Analyzer - Home</title>
+    <!-- Bulma CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.3"></script>
+</head>
+<body>
+<section class="section">
+    <div class="container">
+        <!-- Navbar -->
+        <nav class="navbar" role="navigation" aria-label="main navigation">
+            <div class="navbar-brand">
+                <a class="navbar-item" href="/index.html">
+                    Web Analyzer
+                </a>
+            </div>
+
+            <div class="navbar-menu">
+                <div class="navbar-start">
+                    <a class="navbar-item" href="/dashboard.html" hx-get="/dashboard.html" hx-target="#content" hx-swap="innerHTML">
+                        Dashboard
+                    </a>
+                    <a class="navbar-item" href="/submit.html" hx-get="/submit.html" hx-target="#content" hx-swap="innerHTML">
+                        Submit Website
+                    </a>
+                </div>
+
+                <div class="navbar-end">
+                    <div class="navbar-item">
+                        <div id="auth-buttons">
+                            <a class="button is-primary" href="/register.html" hx-get="/register.html" hx-target="#content" hx-swap="innerHTML">
+                                <strong>Sign up</strong>
+                            </a>
+                            <a class="button is-light" href="/login.html" hx-get="/login.html" hx-target="#content" hx-swap="innerHTML">
+                                Log in
+                            </a>
+                        </div>
+                        <div id="user-info" style="display: none;">
+                            <div class="field is-grouped">
+                                <p class="control">
+                                    <span>Welcome, <span id="username"></span>!</span>
+                                </p>
+                                <p class="control">
+                                    <button class="button is-light" onclick="logout()">Logout</button>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div id="content">
+            <h1 class="title">Welcome to Web Analyzer</h1>
+            <p class="subtitle">Analyze your websites easily.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Custom JS -->
+<script src="/static/js/app.js"></script>
+</body>
+</html>
