@@ -18,5 +18,5 @@ migrate-new:
 
 
 app:
-	mv env.example .env
+	cp env.example .env
 	docker-compose up --build
