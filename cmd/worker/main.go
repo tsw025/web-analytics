@@ -16,7 +16,7 @@ import (
 )
 
 // Task Handler for AnalyzeWebsite
-func handleAnalyzeWebsiteTask(ctx context.Context, t *asynq.Task) error {
+func handleAnalyzeWebsiteTask(_ context.Context, t *asynq.Task) error {
 	var payload tasks.AnalyzeWebsitePayload
 	if err := json.Unmarshal(t.Payload(), &payload); err != nil {
 		log.Infof("Failed to unmarshal payload: %v", err)
