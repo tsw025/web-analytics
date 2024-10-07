@@ -52,7 +52,7 @@ Before you begin, ensure you have met the following requirements:
 
    ```bash
    git clone git@github.com:tsw025/web-analytics.git
-   cd web-analytics 
+   cd web_analytics 
    ```
 
 3. **Build and Start Containers**
