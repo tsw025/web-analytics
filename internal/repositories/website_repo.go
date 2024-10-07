@@ -16,6 +16,8 @@ type WebsiteRepository interface {
 	Create(website *models.Website) error
 	Update(website *models.Website) error
 	Delete(website *models.Website) error
+	GetByUserID(id uint) ([]models.Website, error)
+	GetByIDPreloadAnalytics(id uint) (*models.Website, error)
 }
 
 type websiteRepository struct {
@@ -36,5 +38,19 @@ func (r *websiteRepository) GetByURL(url string) (*models.Website, error) {
 		return nil, nil // or return a specific error or message
 	}
 
+	return &result, err
+}
+
+// GetByUserID returns all websites by user ID
+func (r *websiteRepository) GetByUserID(id uint) ([]models.Website, error) {
+	var result []models.Website
+	err := r.db.Find(&result, "user_id = ?", id).Error
+	return result, err
+}
+
+// GetByIDPreloadAnalytics returns a website by ID with preloaded analytics
+func (r *websiteRepository) GetByIDPreloadAnalytics(id uint) (*models.Website, error) {
+	var result models.Website
+	err := r.db.Preload("Analytics").First(&result, id).Error
 	return &result, err
 }
